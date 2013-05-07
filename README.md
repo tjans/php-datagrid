@@ -57,14 +57,14 @@ $nameCol = $row-&gt;getCol('Name');
 // Set an ID on the row
 $row-&gt;setProp('id', "tr_$id");
 
-// set the background of the strawberry column to black
+// color the background of the strawberry CELL
 if($name == "Strawberry")
 {
     // get an instance of the column and set a css class
     $nameCol-&gt;addClass('strawberry');
 }
 
-// set the background of the entire shoe row to red
+// color the background of the chocolate ROW
 if($name == "Chocolate")    
 {
     $row-&gt;addClass('chocolate');
