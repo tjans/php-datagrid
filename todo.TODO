@@ -1,10 +1,14 @@
 Things left to do:
   ☐ Ability to customize the header
   ☐ Sorting/Paging
-  ☐ Ability to show/hide the header
   ☐ Ability to set the properties on a particular column (width of a cell when you don't have a header)
   ☐ Sorting when there is a query string already present (remove the two parameters you're using for sorting manually)
   ☐ Allow for sorting via jquery
-  ✔ Template columns @done (13-05-08 07:40)
   ☐ ->addClasses for multiple at a time
   ☐ ->removeClass is not working
+
+
+＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
+Archive:
+ ✔ Ability to show/hide the header @done (13-05-08 08:30)
+ ✔ Template columns @done (13-05-08 07:40)

@@ -55,7 +55,6 @@
 		-> headerClass('headerRow')
 		-> setProp('id', 'MyGrid')
 		-> setProp('border', 1)
-		-> setProp('width', '400px')
 		-> setSort($sortField, $sortDir, $sortFieldParam, $sortDirParam);
 
 		// An example of adding the column via an object for more flexibility
@@ -65,7 +64,7 @@
 			->addColumnObj($column)
 			->addColumn('Name', 'Item Name', 'Name')	// adding via quick-add method, most columns will work this way
 			->addColumn('Type', 'Item Type', 'Type')
-			->addColumn('Action', '&nbsp;')
+			->addColumn('Action', 'Actions')
 			->build();
 
 function build_row($row)
@@ -74,15 +73,20 @@ function build_row($row)
 	$name = $row->getVal('Name');
 	$id = $row->getVal('Id');
 
+	$idCol = $row->getCol('Id');
 	$nameCol = $row->getCol('Name');
 	$actionCol = $row->getCol('Action');
+	$typeCol = $row->getCol('Type');
+
+	$idCol->setProp('width','50');
+	$typeCol->setProp('width','50');
 
 	$actionCol
 		-> addClass('center')
 		-> addClass('btn');
 
-	$row->addLink('Action', "examples.php?id=$id", 'edit');
-	$row->addLink('Action', "examples.php?id=$id", 'delete');
+	$row->addLink('Action', "examples.php?id=$id", '[edit]', "", "no-un");
+	$row->addLink('Action', "examples.php?id=$id", '[delete]', "", "no-un");
 
 	// Set an ID on the row
 	$row->setProp('id', "tr_$id");

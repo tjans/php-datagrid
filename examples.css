@@ -1,16 +1,17 @@
-<style type='text/css'>
-	tr.altRow
-	{
-		background:#CECECE;
-	}
-	tr.chocolate {
-		background:#996633;
-	}
-	td.strawberry {
-		background:#FF4D4D;
-		color:white;
-	}
-	td.center {
-		text-align:center;
-	}
-</style>
+.altRow
+{
+	background:#CECECE;
+}
+tr.chocolate {
+	background:#996633;
+}
+td.strawberry {
+	background:#FF4D4D;
+	color:white;
+}
+td.center {
+	text-align:center;
+}
+a.no-un {
+	text-decoration:none;
+}

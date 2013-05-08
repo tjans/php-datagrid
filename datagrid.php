@@ -14,6 +14,7 @@ class DataGrid extends HtmlProperty
 	private $headerRowClassName;
 	private $sortDirection;
 	private $sortField;
+	private $showHeader=true;
 
 	private $sortFieldParameter;
 	private $sortDirectionParameter;
@@ -37,6 +38,17 @@ class DataGrid extends HtmlProperty
 	{
 		$this->rowFunctionName = $functionName;
 		return $this;		
+	}
+
+	/**
+	 * Sets whether the header should display
+	 * @param  [bool] $showHeader
+	 * @return [instance of DataGrid for chaining]
+	 */
+	public function showHeader($showHeader)
+	{
+		$this->showHeader = $showHeader;
+		return $this;
 	}
 
 	/**
@@ -122,38 +134,41 @@ class DataGrid extends HtmlProperty
 			: ""
 		);
 
-		// Build the header
-		$headerHtml = "<thead><tr $headerRowClassName>";	
-		foreach($this->columns as $column)
+		if($this->showHeader)
 		{
-			if($column->sortField)
+			// Build the header
+			$headerHtml = "<thead><tr $headerRowClassName>";	
+			foreach($this->columns as $column)
 			{
-				$sortUrl = $_SERVER['PHP_SELF'];
-				$sortUrl .= "?".$this->sortFieldParameter."=".$column->sortField;
+				if($column->sortField)
+				{
+					$sortUrl = $_SERVER['PHP_SELF'];
+					$sortUrl .= "?".$this->sortFieldParameter."=".$column->sortField;
 
-				$newSortDir = (
-					!$this->sortDirection || $this->sortDirection == "asc" 
-					? "desc"
-					: "asc"
-				);
+					$newSortDir = (
+						!$this->sortDirection || $this->sortDirection == "asc" 
+						? "desc"
+						: "asc"
+					);
 
-				$sortUrl .= "&".$this->sortDirectionParameter."=". (
-					$this->sortField == $column->sortField
-					? $newSortDir
-					: "desc"
-				);
+					$sortUrl .= "&".$this->sortDirectionParameter."=". (
+						$this->sortField == $column->sortField
+						? $newSortDir
+						: "desc"
+					);
 
-				$headerHtml .= "<th><a href='$sortUrl'>".$column->headerText."</a></th>";
+					$headerHtml .= "<th><a href='$sortUrl'>".$column->headerText."</a></th>";
+				}
+				else
+				{
+					$headerHtml .= "<th>".$column->headerText."</th>";	
+				}
+				
 			}
-			else
-			{
-				$headerHtml .= "<th>".$column->headerText."</th>";	
-			}
-			
+			$headerHtml .= "</tr></thead>";	
+
+			$this->append($headerHtml);
 		}
-		$headerHtml .= "</tr></thead>";	
-
-		$this->append($headerHtml);
 
 		// Build the rows collection for the body
 		if(sizeof($this->dataSource))
@@ -206,7 +221,7 @@ class DataGrid extends HtmlProperty
 				{
 					$valueColumn = $row->getCol($column->dataField);
 
-					$this->append("<td class='".$valueColumn->getClassString()."'>");
+					$this->append("<td class='".$valueColumn->getClassString()."' " . $valueColumn->getPropString() . ">");
 					$val = $row->getVal($column->dataField);
 					$this->append($val);
 
@@ -356,7 +371,7 @@ class Row extends HtmlProperty
 	/**
 	 * Gets an instance of the ValueColumn object associated with the given name
 	 * @param  [type] $name [description]
-	 * @return [type]       [description]
+	 * @return [ValueColumn]
 	 */
 	public function getCol($dataField)
 	{
