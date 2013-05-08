@@ -10,4 +10,7 @@
 		background:#FF4D4D;
 		color:white;
 	}
+	td.center {
+		text-align:center;
+	}
 </style>

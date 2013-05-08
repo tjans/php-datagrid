@@ -6,11 +6,18 @@ class DataGrid extends HtmlProperty
 {
 	private $columns;
 	private $rows;
+	private $headerRow;
 	private $html;
 	private $rowFunctionName;
 	private $rowClass;
-	private $alternateRowClass;
-	
+	private $alternateRowClassName;
+	private $headerRowClassName;
+	private $sortDirection;
+	private $sortField;
+
+	private $sortFieldParameter;
+	private $sortDirectionParameter;
+
 	public $dataSource;
 
 	public function __construct()	
@@ -55,13 +62,39 @@ class DataGrid extends HtmlProperty
 	}
 
 	/**
+	 * Set the sort field and direction for the grid
+	 * @param  [string] $field     [sort field name]
+	 * @param  [string] $direction [asc/desc]
+	 * @return [DataGrid instanace for chaining purposes]
+	 */
+	public function setSort($field, $direction, $sortFieldParameter="sort_field", $sortDirectionParameter="sort_direction")
+	{
+		$this->sortField = $field;
+		$this->sortDirection = $direction;
+		$this->sortFieldParameter = $sortFieldParameter;
+		$this->sortDirectionParameter = $sortDirectionParameter;
+		return $this;
+	}
+
+	/**
 	 * Defines the class for an alternate grid row
 	 * @param  string $className - name of the css class you want to include
 	 * @return DataGrid instance for chaining purposes
 	 */
 	public function altRowClass($className="")
 	{
-		$this->alternateRowClass = $className;
+		$this->alternateRowClassName = $className;
+		return $this;
+	}
+
+	/**
+	 * Defines the class for an alternate grid row
+	 * @param  string $className - name of the css class you want to include
+	 * @return DataGrid instance for chaining purposes
+	 */
+	public function headerClass($className="")
+	{
+		$this->headerRowClassName = $className;
 		return $this;
 	}
 
@@ -83,11 +116,40 @@ class DataGrid extends HtmlProperty
 
 		$this->append("<table$pairs>");
 
+		$headerRowClassName = (
+			$this->headerRowClassName
+			? "class='".$this->headerRowClassName."'"
+			: ""
+		);
+
 		// Build the header
-		$headerHtml = "<thead><tr>";	
+		$headerHtml = "<thead><tr $headerRowClassName>";	
 		foreach($this->columns as $column)
 		{
-			$headerHtml .= "<th>".$column->headerText."</th>";
+			if($column->sortField)
+			{
+				$sortUrl = $_SERVER['PHP_SELF'];
+				$sortUrl .= "?".$this->sortFieldParameter."=".$column->sortField;
+
+				$newSortDir = (
+					!$this->sortDirection || $this->sortDirection == "asc" 
+					? "desc"
+					: "asc"
+				);
+
+				$sortUrl .= "&".$this->sortDirectionParameter."=". (
+					$this->sortField == $column->sortField
+					? $newSortDir
+					: "desc"
+				);
+
+				$headerHtml .= "<th><a href='$sortUrl'>".$column->headerText."</a></th>";
+			}
+			else
+			{
+				$headerHtml .= "<th>".$column->headerText."</th>";	
+			}
+			
 		}
 		$headerHtml .= "</tr></thead>";	
 
@@ -103,11 +165,19 @@ class DataGrid extends HtmlProperty
 				$isAlternate = $rowNumber%2;
 
 				$row = new Row();
-				if($isAlternate) $row->addClass($this->alternateRowClass);
+				if($isAlternate) $row->addClass($this->alternateRowClassName);
 
 				// loop through the values in the data source and set the values on the row
-				foreach($dataRow as $key=>$value)
+				foreach($this->columns as $column)
 				{
+					// This section is used to determine if you'd added a field to the data source
+					// e.g., adding a column for a button
+					$key = $column->dataField;
+					$value = (
+						array_key_exists($key, $dataRow)
+						? $dataRow[$key]
+						: ""
+					);
 					$row->setVal($key, $value);
 				}
 				$row->rowNumber = $rowNumber;
@@ -169,9 +239,9 @@ class DataGrid extends HtmlProperty
 	 * @param string $dataField  The name of the datafield you want to display in that column. (must match a column in the datasource)
 	 * @param string $headerText The friendly name you want displayed in the header for a given column
 	 */
-	public function addColumn($dataField, $headerText)
+	public function addColumn($dataField, $headerText, $sortField = null)
 	{
-		$column = new Column($dataField, $headerText);
+		$column = new Column($dataField, $headerText, $sortField);
 		$this->columns[$dataField] = $column;
 		return $this;
 	}
@@ -194,11 +264,13 @@ class Column extends HtmlProperty
 {
 	public $headerText;
 	public $dataField;
+	public $sortField;
 
-	public function __construct($dataField, $headerText)
+	public function __construct($dataField, $headerText, $sortField=null)
 	{
 		$this->headerText = $headerText;
-		$this->dataField = $dataField;		
+		$this->dataField = $dataField;	
+		$this->sortField = $sortField;
 	}
 }
 
@@ -226,6 +298,22 @@ class Row extends HtmlProperty
 		parent::__construct();
 		$this->values = array();
 	}
+
+	public function addLink($columnName, $url, $text, $id="", $classes="")
+	{
+		$html = $this->getVal($columnName);
+		if($html) $html .= "&nbsp;";
+		$html .= "<a href='$url' id='$id' class='$classes'>$text</a>";
+		$this->setVal($columnName, $html);
+	}
+
+	// public function addButton($columnName, $value, $name, $id="", $classes="")
+	// {
+	// 	$html = $this->getVal($columnName);
+	// 	if($html) $html .= "&nbsp;";
+	// 	$html .= "<input type='button' name='$name' value='$value' id='$id' classes='$classes' />";
+	// 	$this->setVal($columnName, $html);
+	// }
 
 	/**
 	 * Sets the value of a given field on the row
@@ -297,6 +385,7 @@ class HtmlProperty
 	public function addClass($className)
 	{
 		$this->classes[] = $className;
+		return $this;
 	}
 
 	/**

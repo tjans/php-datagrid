@@ -5,24 +5,46 @@
 	$flavors = array(
 		array(
 			"Id"=>"1",
-			"Name"=>"Vanilla"
+			"Name"=>"Vanilla",
+			"Type"=>1
 		),
 		array(
 			"Id"=>"2",
-			"Name"=>"Chocolate"
+			"Name"=>"Chocolate",
+			"Type"=>1
 		),
 		array(
 			"Id"=>"3",
-			"Name"=>"Strawberry"
+			"Name"=>"Strawberry",
+			"Type"=>1
 		),
 		array(
 			"Id"=>"4",
-			"Name"=>"Banana"
+			"Name"=>"Banana",
+			"Type"=>1
 		),
 		array(
 			"Id"=>"5",
-			"Name"=>"Mint"
+			"Name"=>"Mint",
+			"Type"=>1
 		)
+	);
+
+	// determine the names of the querystring parameters for sorting (or post params if desired)
+	$sortFieldParam = 'sf';
+	$sortDirParam = 'sd';
+
+	// setup the current sort field and direction
+	$sortField = (
+		isset($_GET[$sortFieldParam])
+		? $_GET[$sortFieldParam]
+		: null
+	);
+
+	$sortDir = (
+		isset($_GET[$sortDirParam])
+		? $_GET[$sortDirParam]
+		: null
 	);
 
 	$grid = new DataGrid();
@@ -30,16 +52,20 @@
 		-> dataSource($flavors)
 		-> rowFunction('build_row')
 		-> altRowClass('altRow')
+		-> headerClass('headerRow')
 		-> setProp('id', 'MyGrid')
 		-> setProp('border', 1)
-		-> setProp('width', '300px');
+		-> setProp('width', '400px')
+		-> setSort($sortField, $sortDir, $sortFieldParam, $sortDirParam);
 
 		// An example of adding the column via an object for more flexibility
 		$column = new Column('Id', 'ID');
 		
 		$output = $grid
 			->addColumnObj($column)
-			->addColumn('Name', 'Item Name')	// adding via quick-add method, most columns will work this way
+			->addColumn('Name', 'Item Name', 'Name')	// adding via quick-add method, most columns will work this way
+			->addColumn('Type', 'Item Type', 'Type')
+			->addColumn('Action', '&nbsp;')
 			->build();
 
 function build_row($row)
@@ -49,6 +75,14 @@ function build_row($row)
 	$id = $row->getVal('Id');
 
 	$nameCol = $row->getCol('Name');
+	$actionCol = $row->getCol('Action');
+
+	$actionCol
+		-> addClass('center')
+		-> addClass('btn');
+
+	$row->addLink('Action', "examples.php?id=$id", 'edit');
+	$row->addLink('Action', "examples.php?id=$id", 'delete');
 
 	// Set an ID on the row
 	$row->setProp('id', "tr_$id");
