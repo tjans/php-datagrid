@@ -51,6 +51,7 @@
 	$grid
 		-> dataSource($flavors)
 		-> rowFunction('build_row')
+		-> headerRowFunction('build_header_row')
 		-> altRowClass('altRow')
 		-> headerClass('headerRow')
 		-> setProp('id', 'MyGrid')
@@ -66,6 +67,12 @@
 			->addColumn('Type', 'Item Type', 'Type')
 			->addColumn('Action', 'Actions')
 			->build();
+
+function build_header_row($columns)
+{
+	$columns['Name']->headerText = "<a href='#'>Name</a>";
+	return $columns;
+}
 
 function build_row($row)
 {

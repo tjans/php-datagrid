@@ -9,6 +9,7 @@ class DataGrid extends HtmlProperty
 	private $headerRow;
 	private $html;
 	private $rowFunctionName;
+	private $headerRowFunctionName;
 	private $rowClass;
 	private $alternateRowClassName;
 	private $headerRowClassName;
@@ -37,6 +38,17 @@ class DataGrid extends HtmlProperty
 	public function rowFunction($functionName)
 	{
 		$this->rowFunctionName = $functionName;
+		return $this;		
+	}
+
+	/**
+	 * Provides a function to be run on the header data before it is built and added to the table markup.
+	 * @param  string $functionName the name of your custom function to be run
+	 * @return DataGrid instance for chaining purposes
+	 */
+	public function headerRowFunction($functionName)
+	{
+		$this->headerRowFunctionName = $functionName;
 		return $this;		
 	}
 
@@ -134,42 +146,6 @@ class DataGrid extends HtmlProperty
 			: ""
 		);
 
-		if($this->showHeader)
-		{
-			// Build the header
-			$headerHtml = "<thead><tr $headerRowClassName>";	
-			foreach($this->columns as $column)
-			{
-				if($column->sortField)
-				{
-					$sortUrl = $_SERVER['PHP_SELF'];
-					$sortUrl .= "?".$this->sortFieldParameter."=".$column->sortField;
-
-					$newSortDir = (
-						!$this->sortDirection || $this->sortDirection == "asc" 
-						? "desc"
-						: "asc"
-					);
-
-					$sortUrl .= "&".$this->sortDirectionParameter."=". (
-						$this->sortField == $column->sortField
-						? $newSortDir
-						: "desc"
-					);
-
-					$headerHtml .= "<th><a href='$sortUrl'>".$column->headerText."</a></th>";
-				}
-				else
-				{
-					$headerHtml .= "<th>".$column->headerText."</th>";	
-				}
-				
-			}
-			$headerHtml .= "</tr></thead>";	
-
-			$this->append($headerHtml);
-		}
-
 		// Build the rows collection for the body
 		if(sizeof($this->dataSource))
 		{
@@ -185,7 +161,7 @@ class DataGrid extends HtmlProperty
 				// loop through the values in the data source and set the values on the row
 				foreach($this->columns as $column)
 				{
-					// This section is used to determine if you'd added a field to the data source
+					// This section is used to determine if you'd added a custom field to the data source
 					// e.g., adding a column for a button
 					$key = $column->dataField;
 					$value = (
@@ -200,6 +176,26 @@ class DataGrid extends HtmlProperty
 
 				$rowNumber++;
 			}
+		}
+
+		if($this->showHeader)
+		{
+			// Build the header
+			$headerHtml = "<thead><tr $headerRowClassName>";	
+
+			if(function_exists($this->headerRowFunctionName))
+			{
+				$functionName = $this->headerRowFunctionName;
+				$this->columns = $functionName($this->columns);
+			}
+			foreach($this->columns as $column)
+			{
+				$headerHtml .= "<th>$column->headerText</th>";
+			}
+
+			$headerHtml .= "</tr></thead>";	
+
+			$this->append($headerHtml);
 		}
 
 		// build the rows
