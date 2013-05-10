@@ -146,9 +146,63 @@ class DataGrid extends HtmlProperty
 			: ""
 		);
 
+		// // Build the rows collection for the body
+		// if(sizeof($this->dataSource))
+		// {
+		// 	$rowNumber = 0;
+
+		// 	foreach($this->dataSource as $dataRow)
+		// 	{
+		// 		$isAlternate = $rowNumber%2;
+
+		// 		$row = new Row();
+		// 		if($isAlternate) $row->addClass($this->alternateRowClassName);
+
+		// 		// loop through the values in the data source and set the values on the row
+		// 		foreach($this->columns as $column)
+		// 		{
+		// 			// This section is used to determine if you'd added a custom field to the data source
+		// 			// e.g., adding a column for a button
+		// 			$key = $column->dataField;
+		// 			$value = (
+		// 				array_key_exists($key, $dataRow)
+		// 				? $dataRow[$key]
+		// 				: ""
+		// 			);
+		// 			$row->setVal($key, $value);
+		// 		}
+		// 		$row->rowNumber = $rowNumber;
+		// 		$this->rows[$rowNumber] = $row;
+
+		// 		$rowNumber++;
+		// 	}
+		// }
+
+		// Build the header
+		if($this->showHeader)
+		{
+			// Build the header
+			$headerHtml = "<thead><tr $headerRowClassName>";	
+
+			if(function_exists($this->headerRowFunctionName))
+			{
+				$functionName = $this->headerRowFunctionName;
+				$this->columns = $functionName($this->columns);
+			}
+			foreach($this->columns as $column)
+			{
+				$headerHtml .= "<th>$column->headerText</th>";
+			}
+
+			$headerHtml .= "</tr></thead>";	
+
+			$this->append($headerHtml);
+		}
+
 		// Build the rows collection for the body
 		if(sizeof($this->dataSource))
 		{
+			$this->append('<tbody>');
 			$rowNumber = 0;
 
 			foreach($this->dataSource as $dataRow)
@@ -174,49 +228,17 @@ class DataGrid extends HtmlProperty
 				$row->rowNumber = $rowNumber;
 				$this->rows[$rowNumber] = $row;
 
-				$rowNumber++;
-			}
-		}
-
-		if($this->showHeader)
-		{
-			// Build the header
-			$headerHtml = "<thead><tr $headerRowClassName>";	
-
-			if(function_exists($this->headerRowFunctionName))
-			{
-				$functionName = $this->headerRowFunctionName;
-				$this->columns = $functionName($this->columns);
-			}
-			foreach($this->columns as $column)
-			{
-				$headerHtml .= "<th>$column->headerText</th>";
-			}
-
-			$headerHtml .= "</tr></thead>";	
-
-			$this->append($headerHtml);
-		}
-
-		// build the rows
-		if(sizeof($this->rows))
-		{
-			$this->append('<tbody>');
-			foreach($this->rows as $row)
-			{
 				// here is where you'd call the row_bound function if it exists. That function takes care of formatting the data, changing it, etc. It passes a "row" object to that function 
 				if(function_exists($this->rowFunctionName))
 				{
 					$functionName = $this->rowFunctionName;
 					$row = $functionName($row);
 				}
-
-				// here is where you'd call the col_bound function if it exists. That function takes care of formatting the data, changing it, etc. It passes a "row" and object to that function 
+				
 				$this->append("<tr class='". $row->getClassString() ."' " . $row->getPropString() . ">");
 				foreach($this->columns as $column)
 				{
 					$valueColumn = $row->getCol($column->dataField);
-
 					$this->append("<td class='".$valueColumn->getClassString()."' " . $valueColumn->getPropString() . ">");
 					$val = $row->getVal($column->dataField);
 					$this->append($val);
@@ -224,7 +246,10 @@ class DataGrid extends HtmlProperty
 					$this->append('</td>');
 				}
 				$this->append('</tr>');
+
+				$rowNumber++;
 			}
+
 			$this->append('</tbody>');
 		}
 
