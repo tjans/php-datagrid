@@ -35,8 +35,10 @@
 		-> dataSource($flavors)
 		-> rowFunction('build_row')
 		-> headerRowFunction('build_header_row')
+		-> rowClass('itemRow')
 		-> altRowClass('altRow')
 		-> headerClass('headerRow')
+		-> caption('5 Awesome Ice Cream Flavors')
 		-> setProp('id', 'MyGrid')
 		-> setProp('border', 1);
 

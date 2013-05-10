@@ -10,7 +10,8 @@ class DataGrid extends HtmlProperty
 	private $html;
 	private $rowFunctionName;
 	private $headerRowFunctionName;
-	private $rowClass;
+	private $caption;
+	private $rowClassName;
 	private $alternateRowClassName;
 	private $headerRowClassName;
 	private $sortDirection;
@@ -53,6 +54,17 @@ class DataGrid extends HtmlProperty
 	}
 
 	/**
+	 * Sets a caption for the table
+	 * @param  [string] $captionText [the text you want set for the caption]
+	 * @return DataGrid instance for chaining purposes
+	 */
+	public function caption($captionText)
+	{
+		$this->caption = $captionText;
+		return $this;
+	}
+
+	/**
 	 * Sets whether the header should display
 	 * @param  [bool] $showHeader
 	 * @return [instance of DataGrid for chaining]
@@ -81,7 +93,7 @@ class DataGrid extends HtmlProperty
 	 */
 	public function rowClass($className="")
 	{
-		$this->rowClass = $className;
+		$this->rowClassName = $className;
 		return $this;
 	}
 
@@ -140,6 +152,8 @@ class DataGrid extends HtmlProperty
 
 		$this->append("<table$pairs>");
 
+		if($this->caption) $this->append("<caption>$this->caption</caption>");
+
 		// the class that goes on the header <tr> tag
 		$headerRowClassName = (
 			$this->headerRowClassName
@@ -182,6 +196,8 @@ class DataGrid extends HtmlProperty
 				$isAlternate = $rowNumber%2;
 
 				$row = new Row();
+
+				if($this->rowClassName) $row->addClass($this->rowClassName);
 				if($isAlternate) $row->addClass($this->alternateRowClassName);
 
 				// loop through the values in the data source and set the values on the row
