@@ -24,3 +24,8 @@ a.no-un {
 	text-align:left;
 	font-weight:bold;	
 }
+
+th.actions-head {
+	background:black;
+	color:white;
+}

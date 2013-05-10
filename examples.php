@@ -54,7 +54,10 @@
 
 function build_header_row($columns)
 {
-	$columns['Name']->headerText = "<a href='#'>Name</a>"; // maybe a sort url or something
+	$nameCol = $columns['Name'];
+
+	$nameCol->headerText = "<a href='#'>Name</a>"; // maybe a sort url or something
+	$columns['Action']->addClass('actions-head');
 	return $columns;
 }
 
@@ -73,6 +76,7 @@ function build_row($row)
 	// Set some HTML properties on the give column
 	$idCol->setProp('width','50');
 	$typeCol->setProp('width','50');
+	$typeCol->addClass('center');
 
 	// Add some CSS classes to the action column
 	$actionCol

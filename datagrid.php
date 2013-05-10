@@ -177,7 +177,7 @@ class DataGrid extends HtmlProperty
 			// after the custom function has run (if it exists), build the markup for the header
 			foreach($this->columns as $column)
 			{
-				$headerHtml .= "<th>$column->headerText</th>";
+				$headerHtml .= "<th class=\"".$column->getClassString()."\" ".$column->getPropString().">$column->headerText</th>";
 			}
 
 			$headerHtml .= "</tr></thead>";	
@@ -441,6 +441,7 @@ class HtmlProperty
 	 */
 	public function getClassString()
 	{
+		if(!sizeof($this->classes)) return "";
 		return implode(' ', $this->classes);
 	}
 
@@ -450,6 +451,8 @@ class HtmlProperty
 	 */
 	public function getPropString()
 	{
+		if(!sizeof($this->props)) return "";
+		
 		$pairs = "";
 		foreach($this->props as $key=>$value)
 		{
