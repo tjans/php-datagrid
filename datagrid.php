@@ -140,43 +140,12 @@ class DataGrid extends HtmlProperty
 
 		$this->append("<table$pairs>");
 
+		// the class that goes on the header <tr> tag
 		$headerRowClassName = (
 			$this->headerRowClassName
 			? "class='".$this->headerRowClassName."'"
 			: ""
 		);
-
-		// // Build the rows collection for the body
-		// if(sizeof($this->dataSource))
-		// {
-		// 	$rowNumber = 0;
-
-		// 	foreach($this->dataSource as $dataRow)
-		// 	{
-		// 		$isAlternate = $rowNumber%2;
-
-		// 		$row = new Row();
-		// 		if($isAlternate) $row->addClass($this->alternateRowClassName);
-
-		// 		// loop through the values in the data source and set the values on the row
-		// 		foreach($this->columns as $column)
-		// 		{
-		// 			// This section is used to determine if you'd added a custom field to the data source
-		// 			// e.g., adding a column for a button
-		// 			$key = $column->dataField;
-		// 			$value = (
-		// 				array_key_exists($key, $dataRow)
-		// 				? $dataRow[$key]
-		// 				: ""
-		// 			);
-		// 			$row->setVal($key, $value);
-		// 		}
-		// 		$row->rowNumber = $rowNumber;
-		// 		$this->rows[$rowNumber] = $row;
-
-		// 		$rowNumber++;
-		// 	}
-		// }
 
 		// Build the header
 		if($this->showHeader)
@@ -184,11 +153,14 @@ class DataGrid extends HtmlProperty
 			// Build the header
 			$headerHtml = "<thead><tr $headerRowClassName>";	
 
+			// this is there a custom function can be bound to modify the properties of a column header
 			if(function_exists($this->headerRowFunctionName))
 			{
 				$functionName = $this->headerRowFunctionName;
 				$this->columns = $functionName($this->columns);
 			}
+
+			// after the custom function has run (if it exists), build the markup for the header
 			foreach($this->columns as $column)
 			{
 				$headerHtml .= "<th>$column->headerText</th>";

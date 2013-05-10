@@ -30,23 +30,6 @@
 		)
 	);
 
-	// determine the names of the querystring parameters for sorting (or post params if desired)
-	$sortFieldParam = 'sf';
-	$sortDirParam = 'sd';
-
-	// setup the current sort field and direction
-	$sortField = (
-		isset($_GET[$sortFieldParam])
-		? $_GET[$sortFieldParam]
-		: null
-	);
-
-	$sortDir = (
-		isset($_GET[$sortDirParam])
-		? $_GET[$sortDirParam]
-		: null
-	);
-
 	$grid = new DataGrid();
 	$grid
 		-> dataSource($flavors)
@@ -55,8 +38,7 @@
 		-> altRowClass('altRow')
 		-> headerClass('headerRow')
 		-> setProp('id', 'MyGrid')
-		-> setProp('border', 1)
-		-> setSort($sortField, $sortDir, $sortFieldParam, $sortDirParam);
+		-> setProp('border', 1);
 
 		// An example of adding the column via an object for more flexibility
 		$column = new Column('Id', 'ID');
@@ -70,7 +52,7 @@
 
 function build_header_row($columns)
 {
-	$columns['Name']->headerText = "<a href='#'>Name</a>";
+	$columns['Name']->headerText = "<a href='#'>Name</a>"; // maybe a sort url or something
 	return $columns;
 }
 
@@ -80,18 +62,22 @@ function build_row($row)
 	$name = $row->getVal('Name');
 	$id = $row->getVal('Id');
 
+	// Setup the columns you want to work with
 	$idCol = $row->getCol('Id');
 	$nameCol = $row->getCol('Name');
 	$actionCol = $row->getCol('Action');
 	$typeCol = $row->getCol('Type');
 
+	// Set some HTML properties on the give column
 	$idCol->setProp('width','50');
 	$typeCol->setProp('width','50');
 
+	// Add some CSS classes to the action column
 	$actionCol
 		-> addClass('center')
 		-> addClass('btn');
 
+	// Add an action link to the Action column
 	$row->addLink('Action', "examples.php?id=$id", '[edit]', "", "no-un");
 	$row->addLink('Action', "examples.php?id=$id", '[delete]', "", "no-un");
 
@@ -111,7 +97,7 @@ function build_row($row)
 		$row->addClass('chocolate');
 	}
 
-	// change one of the values
+	// change one of the cell values
 	if($name == "Banana")	
 	{
 		$row->setVal('Name', $name . ' (favorite)');
