@@ -75,6 +75,7 @@ class DataGrid2 extends HtmlEntity
 			$html .= "<caption>".$this->caption."</caption>";
 		}
 
+		// Build the header
 		$html .= "<thead><tr>";
 		foreach($this->columns as $dataField=>$headerColumn)
 		{
@@ -86,7 +87,7 @@ class DataGrid2 extends HtmlEntity
 		
 		$rowIndex = 0;
 
-		// Create the objects 
+		// Create the objects and their children e.g., "row->cells->value" for ease of use in "rowFunction"
 		foreach($this->dataSource as $record)
 		{	
 			$row = new TableRow();
@@ -125,13 +126,15 @@ class DataGrid2 extends HtmlEntity
 
 			$row->setAttr('class', $classes);
 
-			// Now that we've spun the array data into some manageable objects, let's call the rowFunction to format and further process, then we'll output the markup to the screen
+			// Now that we've spun the array data into some manageable objects, let's call the rowFunction if the user provided one to format and 
+			// further process, then we'll output the markup to the screen
 			$rowFunctionName = $this->rowFunction;
 			if(function_exists($rowFunctionName))
 			{
 				$row = $rowFunctionName($row);
 			}
 
+			// rowFunction/formatting complete, now let's boogie
 			$html .= "<tr ".$row->getAttrString().">";
 			foreach($row->getCells() as $dataField=>$cell)
 			{
