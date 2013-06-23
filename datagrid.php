@@ -177,7 +177,10 @@ class DataGrid extends HtmlProperty
 			// after the custom function has run (if it exists), build the markup for the header
 			foreach($this->columns as $column)
 			{
-				$headerHtml .= "<th class=\"".$column->getClassString()."\" ".$column->getPropString().">$column->headerText</th>";
+				if($column->getDisplay())
+				{
+					$headerHtml .= "<th class=\"".$column->getClassString()."\" ".$column->getPropString().">$column->headerText</th>";
+				}
 			}
 
 			$headerHtml .= "</tr></thead>";	
@@ -226,12 +229,15 @@ class DataGrid extends HtmlProperty
 				$this->append("<tr class='". $row->getClassString() ."' " . $row->getPropString() . ">");
 				foreach($this->columns as $column)
 				{
-					$valueColumn = $row->getCol($column->dataField);
-					$this->append("<td class='".$valueColumn->getClassString()."' " . $valueColumn->getPropString() . ">");
-					$val = $row->getVal($column->dataField);
-					$this->append($val);
+					if($column->getDisplay())
+					{
+						$valueColumn = $row->getCol($column->dataField);
+						$this->append("<td class='".$valueColumn->getClassString()."' " . $valueColumn->getPropString() . ">");
+						$val = $row->getColumnVal($column->dataField);
+						$this->append($val);
 
-					$this->append('</td>');
+						$this->append('</td>');
+					}
 				}
 				$this->append('</tr>');
 
@@ -289,12 +295,22 @@ class Column extends HtmlProperty
 	public $headerText;
 	public $dataField;
 	public $sortField;
+	private $display = true;
 
 	public function __construct($dataField, $headerText, $sortField=null)
 	{
 		$this->headerText = $headerText;
 		$this->dataField = $dataField;	
 		$this->sortField = $sortField;
+	}
+
+	public function setDisplay($doDisplay)
+	{
+		$this->display = $doDisplay;
+	}
+	public function getDisplay()
+	{
+		return $this->display;
 	}
 }
 
@@ -325,7 +341,7 @@ class Row extends HtmlProperty
 
 	public function addLink($columnName, $url, $text, $id="", $classes="")
 	{
-		$html = $this->getVal($columnName);
+		$html = $this->getColumnVal($columnName);
 		if($html) $html .= "&nbsp;";
 		$html .= "<a href='$url' id='$id' class='$classes'>$text</a>";
 		$this->setVal($columnName, $html);
@@ -366,7 +382,7 @@ class Row extends HtmlProperty
 	 * @param  [string] $dataField [name of the field from the data source]
 	 * @return [ValueColumn obj] $value [an instance of the ValueColumn class]
 	 */
-	public function getVal($dataField)
+	public function getColumnVal($dataField)
 	{
 		$value = null;
 

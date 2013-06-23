@@ -64,8 +64,8 @@ function build_header_row($columns)
 function build_row($row)
 {
 	// Setup some values for some of the data fields
-	$name = $row->getVal('Name');
-	$id = $row->getVal('Id');
+	$name = $row->getColumnVal('Name');
+	$id = $row->getColumnVal('Id');
 
 	// Setup the columns you want to work with
 	$idCol = $row->getCol('Id');
@@ -106,7 +106,7 @@ function build_row($row)
 	// change one of the cell values
 	if($name == "Banana")	
 	{
-		$row->setVal('Name', $name . ' (favorite)');
+		$row->setVal('Name', $name . " (favorite) <img src='https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcROTNegrNoPzMFMcpQ4pl7tko9LMwgoXuZyjTmX8vpUuPS_RfZr' />");
 	}
 
 	return $row;

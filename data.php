@@ -1,0 +1,28 @@
+<?php
+	$flavors = array(
+		array(
+			"Id"=>"1",
+			"Name"=>"Vanilla",
+			"Type"=>1
+		),
+		array(
+			"Id"=>"2",
+			"Name"=>"Chocolate",
+			"Type"=>1
+		),
+		array(
+			"Id"=>"3",
+			"Name"=>"Strawberry",
+			"Type"=>1
+		),
+		array(
+			"Id"=>"4",
+			"Name"=>"Banana",
+			"Type"=>1
+		),
+		array(
+			"Id"=>"5",
+			"Name"=>"Mint",
+			"Type"=>1
+		)
+	);
